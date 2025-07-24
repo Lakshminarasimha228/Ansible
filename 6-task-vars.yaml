@@ -4,7 +4,7 @@
   vars: 
     COURSE: DevOps with AWS 
     DURATION: 10HR
-    TRAINER: LAKSHMI
+    TRAINER: sivakumar Reddy
   tasks: 
     - name: print course imformation 
       vars:
