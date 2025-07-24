@@ -1,5 +1,5 @@
 - name: PLAY1
-  hosta: local
+  hosts: local
   connection: local
   tasks:
   - name: hello from play 1 and tasks1
@@ -11,7 +11,7 @@
       msg: "Hello from PLAY-1 and TASK-2"    
 
 - name: PLAY2
-  hosta: local
+  hosts: local
   connection: local
   tasks:
   - name: hello from play 2 and tasks1
