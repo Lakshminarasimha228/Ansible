@@ -4,7 +4,7 @@
   vars: 
     COURSE: Ansible #in equal to COURCE=Ansible in shell, shell we refer $VAR or (VAR)
     DURATION: 10HR
-    TRAINER: sivakumar Reddy
+    TRAINER: Sivakumar Reddy
   tasks: 
     - name: print course imformation 
       ansible.builtin.debug:
