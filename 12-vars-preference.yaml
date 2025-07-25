@@ -3,8 +3,8 @@
   connection: local
   vars:
     GREETING: "Hello form PLAY"
-  vars_files:
-    - course.yaml
+  # vars_files:
+  #   - course.yaml
   vars_prompt:
     - name: GREETING
       prompt: please enter the greeting
@@ -17,6 +17,8 @@
         msg: "{{ GREETING }}"  
 
 
-
+# 1. command line or args
+# 2. task
+# 3.file
 
       
