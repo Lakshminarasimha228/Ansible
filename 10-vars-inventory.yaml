@@ -4,3 +4,8 @@
     - name: print course info
       ansible.builtin.debug:
         msg: "Hello I am learning {{ COURSE }}, Duration: {{ DURATION }}, Trainer is: {{ TRAINER }}"
+
+
+
+# ansible-playbook -i inventory.ini -e ansible_user=ec2-user -e ansible_password= 10-vars-inventory.yaml     with out password 
+# ansible-playbook -i inventory.ini 10-vars-inventory.yaml 
