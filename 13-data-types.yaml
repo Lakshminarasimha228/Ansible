@@ -13,6 +13,6 @@
       CI: Jenkins
       SCRIPITING: "Shell, Ansible, Terraform, Python "
   tasks:
-    - name: print cource information 
-      ansible.builtin.debug:
-        msg: "Course is: {{ COURSE }}, Duration: {{ DURATION }}, is live?: {{ IS_LIVE}}, Tools are: {{ TOOLS}}, Concept are: {{ CONCEPTS }}"
+  - name: print cource information 
+    ansible.builtin.debug:
+      msg: "Course is: {{ COURSE }}, Duration: {{ DURATION }}, is live?: {{ IS_LIVE}}, Tools are: {{ TOOLS}}, Concept are: {{ CONCEPTS }}"
