@@ -35,5 +35,5 @@
     - name: convert to uppercase
       vars:
         name: "lakshminarasimha p k"
-      ansible.buildin.debug:
+      ansible.builtin.debug:
         msg: "Hello {{ name | upper }}"  
