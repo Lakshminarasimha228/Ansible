@@ -1,6 +1,5 @@
 - name: install packages 
-  hosts: localhost
-  connection: local
+  hosts: frontend
   tasks:
   - name: install packages
     ansible.builtin.debug:
