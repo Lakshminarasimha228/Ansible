@@ -1,15 +1,15 @@
 ---
-- name: Launch EC2 instances and update Route53 records
+- name: Provision EC2 instances and update Route53 records
   hosts: localhost
   connection: local
-  gather_facts: false
+  gather_facts: no
 
   vars:
     ami_id: "ami-09c813fb71547fc4f"
-    sg_id: "sg-032739b3c91414e33"      # Replace with your SG ID
-    zone_id: "Z04271653U7W4X8SKWK80"   # Replace with your Zone ID
-    domain_name: "lakshmi.cyou"
     instance_type: "t3.micro"
+    security_group: "sg-032739b3c91414e33"
+    zone_id: "Z04271653U7W4X8SKWK80"
+    domain_name: "lakshmi.cyou"
     instances:
       - mongodb
       - redis
@@ -24,23 +24,29 @@
       - frontend
 
   tasks:
-    - name: Launch EC2 instance
+    - name: Launch EC2 instances
       amazon.aws.ec2_instance:
-        name: "{{ instance }}"
-        key_name: proceed without a key pair # replace with your keypair if needed
+        name: "{{ item }}"
+        image_id: "{{ ami_id }}"
         instance_type: "{{ instance_type }}"
-        image_id: "{{ ami-09c813fb71547fc4f }}"
-        security_group: "{{ sg-032739b3c91414e33 }}"
+        security_group: "{{ security_group }}"
         wait: yes
+        tags:
+          Name: "{{ item }}"
       loop: "{{ instances }}"
-      register: ec2_results
+      register: ec2_instances
 
-    - name: Set DNS records in Route53
+    - name: Set fact for instance details
+      set_fact:
+        instance_facts: "{{ instance_facts | default({}) | combine({ item.item: item }) }}"
+      loop: "{{ ec2_instances.results }}"
+
+    - name: Create/Update Route53 records
       amazon.aws.route53:
-        zone: "{{ Z04271653U7W4X8SKWK80 }}"
-        record: "{{ (item.item == 'frontend') | ternary(domain_name, item.item ~ '.' ~ domain_name) }}"
+        state: present
+        zone: "{{ zone_id }}"
+        record: "{{ (item.key == 'frontend') | ternary(domain_name, item.key ~ '.' ~ domain_name) }}"
         type: A
         ttl: 60
-        value: "{{ (item.item == 'frontend') | ternary(item.instances[0].public_ip_address, item.instances[0].private_ip_address) }}"
-        state: present
-      loop: "{{ ec2_results.results }}"
+        value: "{{ (item.key == 'frontend') | ternary(item.value.instances[0].public_ip_address, item.value.instances[0].private_ip_address) }}"
+      loop: "{{ instance_facts | dict2items }}"
