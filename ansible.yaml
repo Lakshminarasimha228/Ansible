@@ -27,7 +27,7 @@
     - name: Launch EC2 instance
       amazon.aws.ec2_instance:
         name: "{{ item }}"
-        key_name: my-key   # replace with your keypair if needed
+        key_name: proceed without a keypair # replace with your keypair if needed
         instance_type: "{{ instance_type }}"
         image_id: "{{ ami_id }}"
         security_group: "{{ sg_id }}"
