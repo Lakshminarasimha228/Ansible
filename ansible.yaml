@@ -44,7 +44,7 @@
     - name: Create/Update Route53 records
       amazon.aws.route53:
         state: present
-        zone: "{{ zone_id }}"
+        zone: "{{ Z04271653U7W4X8SKWK80 }}"
         record: "{{ (item.key == 'frontend') | ternary(domain_name, item.key ~ '.' ~ domain_name) }}"
         type: A
         ttl: 60
