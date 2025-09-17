@@ -46,7 +46,7 @@
         state: present
         hosted_zone_id: "{{ zone_id }}"   # ✅ correct param name
         record: "{{ (item.key == 'frontend') | ternary(domain_name, item.key ~ '.' ~ domain_name) }}"
-        TYPE: A
-        TTL: 60   # ⬅️ reduced from 60 to 1
+        type: A
+        ttl: 60
         value: "{{ (item.key == 'frontend') | ternary(item.value.instances[0].public_ip_address, item.value.instances[0].private_ip_address) }}"
       loop: "{{ instance_facts | dict2items }}"
