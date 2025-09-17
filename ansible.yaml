@@ -26,18 +26,18 @@
   tasks:
     - name: Launch EC2 instance
       amazon.aws.ec2_instance:
-        name: "{{ item }}"
+        name: "{{ instance }}"
         key_name: proceed without a key pair # replace with your keypair if needed
         instance_type: "{{ instance_type }}"
-        image_id: "{{ ami_id }}"
-        security_group: "{{ sg_id }}"
+        image_id: "{{ ami-09c813fb71547fc4f }}"
+        security_group: "{{ sg-032739b3c91414e33 }}"
         wait: yes
       loop: "{{ instances }}"
       register: ec2_results
 
     - name: Set DNS records in Route53
       amazon.aws.route53:
-        zone: "{{ zone_id }}"
+        zone: "{{ Z04271653U7W4X8SKWK80 }}"
         record: "{{ (item.item == 'frontend') | ternary(domain_name, item.item ~ '.' ~ domain_name) }}"
         type: A
         ttl: 60
