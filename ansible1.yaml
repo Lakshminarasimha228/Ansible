@@ -1,3 +1,4 @@
+---
 - name: Provision EC2 instances and update Route53 records
   hosts: localhost
   connection: local
@@ -41,12 +42,11 @@
       loop: "{{ ec2_instances.results }}"
 
     - name: Create/Update Route53 records
-      amazon.aws.route53_record:
+      amazon.aws.route53:
         state: present
         hosted_zone_id: "{{ zone_id }}"
-        record_name: "{{ (item.key == 'frontend') | ternary(domain_name, item.key ~ '.' ~ domain_name) }}"
+        record: "{{ (item.key == 'frontend') | ternary(domain_name, item.key ~ '.' ~ domain_name) }}"
         type: A
         ttl: 1
-        records:
-          - "{{ (item.key == 'frontend') | ternary(item.value.instances[0].public_ip_address, item.value.instances[0].private_ip_address) }}"
+        value: "{{ (item.key == 'frontend') | ternary(item.value.instances[0].public_ip_address, item.value.instances[0].private_ip_address) }}"
       loop: "{{ instance_facts | dict2items }}"
