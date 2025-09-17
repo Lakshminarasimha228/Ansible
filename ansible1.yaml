@@ -1,0 +1,52 @@
+- name: Provision EC2 instances and update Route53 records
+  hosts: localhost
+  connection: local
+  gather_facts: no
+
+  vars:
+    ami_id: "ami-09c813fb71547fc4f"
+    instance_type: "t3.micro"
+    security_group: "sg-032739b3c91414e33"
+    zone_id: "Z04271653U7W4X8SKWK80"
+    domain_name: "lakshmi.cyou"
+    instances:
+      - mongodb
+      - redis
+      - mysql
+      - rabbitmq
+      - catalogue
+      - user
+      - cart
+      - shipping
+      - payment
+      - dispatch
+      - frontend
+
+  tasks:
+    - name: Launch EC2 instances
+      amazon.aws.ec2_instance:
+        name: "{{ item }}"
+        image_id: "{{ ami_id }}"
+        instance_type: "{{ instance_type }}"
+        security_group: "{{ security_group }}"
+        wait: yes
+        tags:
+          Name: "{{ item }}"
+      loop: "{{ instances }}"
+      register: ec2_instances
+
+    - name: Set fact for instance details
+      set_fact:
+        instance_facts: "{{ instance_facts | default({}) | combine({ item.item: item }) }}"
+      loop: "{{ ec2_instances.results }}"
+
+    - name: Create/Update Route53 records
+      amazon.aws.route53_record:
+        state: present
+        hosted_zone_id: "{{ zone_id }}"
+        record_name: "{{ (item.key == 'frontend') | ternary(domain_name, item.key ~ '.' ~ domain_name) }}"
+        type: A
+        ttl: 1
+        records:
+          - "{{ (item.key == 'frontend') | ternary(item.value.instances[0].public_ip_address, item.value.instances[0].private_ip_address) }}"
+      loop: "{{ instance_facts | dict2items }}"
