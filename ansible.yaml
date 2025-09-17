@@ -1,0 +1,46 @@
+---
+- name: Launch EC2 instances and update Route53 records
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars:
+    ami_id: "ami-09c813fb71547fc4f"
+    sg_id: "sg-032739b3c91414e33"      # Replace with your SG ID
+    zone_id: "Z04271653U7W4X8SKWK80"   # Replace with your Zone ID
+    domain_name: "lakshmi.cyou"
+    instance_type: "t3.micro"
+    instances:
+      - mongodb
+      - redis
+      - mysql
+      - rabbitmq
+      - catalogue
+      - user
+      - cart
+      - shipping
+      - payment
+      - dispatch
+      - frontend
+
+  tasks:
+    - name: Launch EC2 instance
+      amazon.aws.ec2_instance:
+        name: "{{ item }}"
+        key_name: my-key   # replace with your keypair if needed
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ ami_id }}"
+        security_group: "{{ sg_id }}"
+        wait: yes
+      loop: "{{ instances }}"
+      register: ec2_results
+
+    - name: Set DNS records in Route53
+      amazon.aws.route53:
+        zone: "{{ zone_id }}"
+        record: "{{ (item.item == 'frontend') | ternary(domain_name, item.item ~ '.' ~ domain_name) }}"
+        type: A
+        ttl: 60
+        value: "{{ (item.item == 'frontend') | ternary(item.instances[0].public_ip_address, item.instances[0].private_ip_address) }}"
+        state: present
+      loop: "{{ ec2_results.results }}"
