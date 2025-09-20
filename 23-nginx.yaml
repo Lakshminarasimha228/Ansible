@@ -1,5 +1,5 @@
 - name: install nginx
-  hosts: tag_Name_frontend
+  hosts: local
   become: yes
   serial: 5
   tasks:
