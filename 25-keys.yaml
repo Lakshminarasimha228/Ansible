@@ -1,5 +1,5 @@
 - name: ping the server
-  hosts: keys
+  hosts: all
   become: yes
   tasks:
   - name: install nginx
